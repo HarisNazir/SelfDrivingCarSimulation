@@ -7,20 +7,37 @@ class Sensor{
 
         this.rays=[];
         this.readings=[];
+        this.previousReadings = [];
+        this.sameReadingsCount = 0;
     }
 
-    update(roadBorders,traffic){
+    update(roadBorders, traffic) {
         this.#castRays();
-        this.readings=[];
-        for(let i=0;i<this.rays.length;i++){
-            this.readings.push(
-                this.#getReading(
-                    this.rays[i],
-                    roadBorders,
-                    traffic
-                )
-            );
+        this.readings = [];
+        let interaction = false;
+        for (let i = 0; i < this.rays.length; i++) {
+            const reading = this.#getReading(this.rays[i], roadBorders, traffic);
+            this.readings.push(reading);
+            if (reading) {
+                interaction = true;
+            }
         }
+        if (JSON.stringify(this.readings) === JSON.stringify(this.previousReadings)) {
+            this.sameReadingsCount++;
+            if (this.sameReadingsCount >= 5 && !this.resetScheduled) {
+                // Schedule a game reset in 5 seconds if the sensor readings stay the same for 5 seconds
+                this.resetScheduled = true;
+                setTimeout(() => {
+                    restart();
+                    this.resetScheduled = false;
+                }, 5000);
+            }
+        } else {
+            this.sameReadingsCount = 0;
+            // Cancel the scheduled game reset if the sensor readings change
+            this.resetScheduled = false;
+        }
+        this.previousReadings = [...this.readings];
     }
 
     #getReading(ray,roadBorders,traffic){

@@ -29,6 +29,9 @@ class Car{
             this.polygon=this.#createPolygon();
             this.damaged=this.#assessDamage(roadBorders,traffic);
         }
+        if(this.damaged){
+            restart();
+        }
         if(this.sensor){
             this.sensor.update(roadBorders,traffic);
             const offsets=this.sensor.readings.map(

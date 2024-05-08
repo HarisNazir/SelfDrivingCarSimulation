@@ -42,6 +42,11 @@ function discard(){
     localStorage.removeItem("bestBrain");
 }
 
+function restart(){
+    localStorage.removeItem("bestBrain");
+    location.reload();
+}
+
 function generateCars(N){
     const cars=[];
     for(let i=1;i<=N;i++){
